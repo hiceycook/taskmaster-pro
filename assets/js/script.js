@@ -44,6 +44,7 @@ var saveTasks = function () {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
+//WHEN TASK TEXT IS CLICKED ON, TURN INTO TEXT INPUT //
 $(".list-group").on("click", "p", function () {
   let text = $(this).text().trim();
   let textInput = $("<textarea>")
@@ -53,6 +54,7 @@ $(".list-group").on("click", "p", function () {
   textInput.trigger("focus");
 });
 
+// WHEN TASK TEXT IS OUT OF FOCUS, SAVE VALUES AND RETURN BACK TO P ELEMENT //
 $(".list-group").on("blur", "textarea", function () {
   // get the textarea's current value/text
   var text = $(this)
@@ -80,6 +82,57 @@ $(".list-group").on("blur", "textarea", function () {
 
   // replace textarea with p element
   $(this).replaceWith(taskP);
+});
+
+// WHEN DUE DATE IS CLICKED //
+$(".list-group").on("click", "span", function () {
+  // get current text
+  var date = $(this)
+    .text()
+    .trim();
+
+  // CREATE NEW INPUT ELEMENT //
+  var dateInput = $("<input>")
+    .attr("type", "text")
+    .addClass("form-control")
+    .val(date);
+
+  // SWAP SPAN ELEMENT TO INPUT //
+  $(this).replaceWith(dateInput);
+
+  // AUTO FOCUS ON NEW ELEMENT
+  dateInput.trigger("focus");
+});
+
+// WHEN VALUE OF DATE IS CHANGED
+$(".list-group").on("blur", "input[type='text']", function () {
+  // get current text
+  var date = $(this)
+    .val()
+    .trim();
+
+  // GET THE PARENT UL'S ID ATTRIBUTE
+  var status = $(this)
+    .closest(".list-group")
+    .attr("id")
+    .replace("list-", "");
+
+  // get the task's position in the list of other li elements
+  var index = $(this)
+    .closest(".list-group-item")
+    .index();
+
+  // update task in array and re-save to localstorage
+  tasks[status][index].date = date;
+  saveTasks();
+
+  // RECREATE THE SPAN ELEMENT USING BOOTSTRAP STYLING //
+  var taskSpan = $("<span>")
+    .addClass("badge badge-primary badge-pill")
+    .text(date);
+
+  // REPLACE THE INPUT ELEMENT WITH THE SPAN ELEMENT //
+  $(this).replaceWith(taskSpan);
 });
 
 
